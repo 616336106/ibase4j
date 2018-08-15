@@ -68,4 +68,31 @@ public class SysDicServiceImpl extends BaseServiceImpl<SysDic, SysDicMapper> imp
         }
         return resultMap;
     }
+
+    @Override
+    @Cacheable(value = Constants.CACHE_NAMESPACE + "sysDics")
+    public String getText(String parentType, String parentCode, String type, String code) {
+        Map<String, Object> params = InstanceUtil.newHashMap();
+        params.put("parentType", parentType);
+        params.put("parentCode", parentCode);
+        params.put("type", type);
+        params.put("code", code);
+        List<SysDic> list = queryList(params);
+        if (list.isEmpty()) {
+            return "";
+        }
+        return list.get(0).getCodeText();
+    }
+
+    @Override
+    @Cacheable(value = Constants.CACHE_NAMESPACE + "sysDics")
+    public List<SysDic> getDics(String parentType, String parentCode, String type) {
+        Map<String, Object> map = InstanceUtil.newHashMap();
+        map.put("type", type);
+        map.put("parentType", parentType);
+        map.put("parentCode", parentCode);
+        map.put("orderBy", "type_,sort_no");
+        List<SysDic> list = queryList(map);
+        return list;
+    }
 }
